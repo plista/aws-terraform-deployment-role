@@ -14,9 +14,12 @@ terraform {
 
   backend "s3" {
     encrypt = true
-    bucket = "plista-platforms-terraform-state"
-    dynamodb_table = "plista-platforms-terraform-lock"
+	// UPDATE: set the bucket name for all your project state
+    bucket = "terraform-state"
+	// UPDATE: set the dynamodb table for all your lock entries to go into
+    dynamodb_table = "terraform-lock"
     region = "eu-west-1"
-    key = "mysoftware-deployment-role.tfstate"
+	// UPDATE: Set the name of the state file, try to make it similar to your local.prefix value
+    key = "SQUAD-my-project-deployment-role.tfstate"
   }
 }
