@@ -51,6 +51,11 @@ resulting resources may end up with a weird `mix-of-dashes_with_underscores-and-
 Find each resource with the prefix `SQUAD_my_software`. It's not possible to use interpolation, 
 just edit it to match the `SQUAD` name and service name
 
+The reason why resources have highly specific names is that we don't want to include them into a 
+global infrastructure project and find that the same resource names are being used in other projects. 
+So the way around this is to name each resource with a prefix relating to the project. That way the 
+problem is avoided completely.
+
 ### Local value `local.squad`
 
 Try to make this value the same as the team the service is being built for
