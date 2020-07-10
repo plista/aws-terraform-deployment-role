@@ -3,6 +3,22 @@
 A Blueprint project for a deployment role for AWS using terraform. It has a lot of examples and snippets that can 
 easily be copied into the project to save time creating these roles in the future
 
+## Advice about updating permissions
+
+Normally if terraform quits whilst deploying, it'll say the permission that is missing. Then the deployment role needs to
+be updated with that permission and then deployed again. Repeat until this process is running without issue.
+
+A good idea is to apply->destroy->apply->destroy a few times to make sure the process is repeatable without issues
+
+Sometimes, terraform will quit without really giving good information about why it quit, use the `TF_LOG=trace` parameter
+before the terraform command to output really detailed information, normally it might give a `GUID` like value, which 
+can be searched for in the output to find the problem. 
+
+However, sometimes terraform will quit, but won't give any meaninful output. Remember that all API requests are logged
+in `AWS CloudTrail` and the request that failed might be in that list somewhere. Search for the service by `event source` 
+or some other identifying information and there will be a list of API requests made, the one which failed will be here. 
+Inside the error information will normally be information that is not in the terraform output.
+
 ## Before starting
 
 This terraform repository assumes that the `s3` and `dynamodb table` for storing terraform state and lock 
@@ -15,11 +31,11 @@ It's very important to not forget to edit the `terraform.tf` file and set the co
 any terraform command. This is because terraform will create resources based on that configuration. 
 
 By default in this repository, that information it set to the same `SQUAD-my-project-deployment-role.tfstate` value and
-there will be problems if you do not change this before running terraform for the first time.
+there will be problems if these values are not changed before running terraform for the first time.
 
 - Update the `bucket` value to match the desired s3 bucket to store state into
 - Update the `dynamodb_table` value to match the desired dynamodb table to store terraform lock information in.
-- Update the `key` value to match the `SQUAD` name and replace `my-project` with your `service name`
+- Update the `key` value to match the `SQUAD` name and replace `my-project` with the `service name`
 
 # Customising
 
