@@ -63,6 +63,7 @@ needed. However it's unlikely.
 
 If multiple suffixes are needed, add more with the same pattern as the existing ones.
 
+
 ### Local value `local.prefixes`
 
 Most projects just need one prefix, so edit the one given to match the `squad` and `service name`. However
