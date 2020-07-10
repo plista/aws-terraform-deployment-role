@@ -1,11 +1,11 @@
-resource "aws_iam_policy" "deployment_policy" {
+resource "aws_iam_policy" "SQUAD_my_software_deployment_policy" {
   count = length(local.suffixes)
-  name = "${local.prefixes["my_project_name"]}-deployment-policy-${local.suffixes[count.index]}"
+  name = "${local.prefixes["my_software"]}-deployment-policy-${local.suffixes[count.index]}"
 
-  policy = data.aws_iam_policy_document.deployment_permissions[count.index].json
+  policy = data.aws_iam_policy_document.SQUAD_my_software_deployment_permissions[count.index].json
 }
 
-data "aws_iam_policy_document" "deployment_permissions" {
+data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   count = length(local.suffixes)
 
   ////////////////////////////////////////////////////////////
@@ -19,11 +19,10 @@ data "aws_iam_policy_document" "deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:iam::${local.account_id}:policy/${local.dash_prefix}-dynamodb-policy",
-	  "arn:aws:iam::${local.account_id}:policy/${local.dash_prefix}-lambda-policy",
-	  "arn:aws:iam::${local.account_id}:policy/${local.dash_prefix}-cloudwatch-policy",
-	  "arn:aws:iam::${local.account_id}:role/${local.dash_prefix}-lambda-role",
-	  "arn:aws:iam::${local.account_id}:role/SELFSV-api_gateway-api-gateway-role",
+	  "arn:aws:iam::${local.account_id}:policy/${local.prefixes["my_software"]}-dynamodb-policy-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.account_id}:policy/${local.prefixes["my_software"]}-lambda-policy-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.account_id}:policy/${local.prefixes["my_software"]}-cloudwatch-policy-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.account_id}:role/${local.prefixes["my_software"]}-lambda-role-${local.suffixes[count.index]}",
 	]
 	actions = [
 	  "iam:CreateRole",
@@ -52,7 +51,7 @@ data "aws_iam_policy_document" "deployment_permissions" {
   ////////////////////////////////////////////////////////////
   statement {
 	effect = "Allow"
-	resources = [aws_iam_role.deployment_role[count.index].arn]
+	resources = [aws_iam_role.SQUAD_my_software_deployment_role[count.index].arn]
 	actions = ["ec2:DescribeAccountAttributes"]
   }
 
@@ -183,8 +182,8 @@ data "aws_iam_policy_document" "deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:lambda:*:${local.account_id}:function:${local.underscore_prefix}*",
-	  "arn:aws:lambda:*:${local.account_id}:layer:${local.underscore_prefix}*",
+	  "arn:aws:lambda:*:${local.account_id}:function:${local.prefixes["my_software"]}*",
+	  "arn:aws:lambda:*:${local.account_id}:layer:${local.prefixes["my_software"]}*",
 	]
 	actions = [
 	  "lambda:CreateFunction",
@@ -213,7 +212,7 @@ data "aws_iam_policy_document" "deployment_permissions" {
 
   statement {
 	effect = "Allow"
-	resources = ["arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:*${local.underscore_prefix}*:log-stream:"]
+	resources = ["arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/aws/lambda/${local.prefixes["my_software"]}*:log-stream:"]
 	actions = [
 	  "logs:CreateLogGroup",
 	  "logs:ListTagsLogGroup",
@@ -229,7 +228,7 @@ data "aws_iam_policy_document" "deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/${var.squad}/platforms_api/${var.environment}/root_domain",
+	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/${var.squad}/api_gateway/${var.environment}/root_domain",
 	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/${var.squad}/api_server/${var.environment}/api_server_url",
 	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/${var.squad}/api_server/${var.environment}/api_email",
 	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/${var.squad}/api_server/${var.environment}/api_password",
@@ -265,7 +264,7 @@ data "aws_iam_policy_document" "deployment_permissions" {
 	effect = "Allow"
 	resources = [
 	  // UPDATE: Set the appropriate dynamodb table you wish to manage
-	  "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/${local.prefixes["my_project_name"]}-my-table-name-${local.suffixes[count.index]}",
+	  "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/${local.prefixes["my_software"]}-my-table-name-${local.suffixes[count.index]}",
 	]
 	actions = [
 	  "dynamodb:DescribeTable",
@@ -276,8 +275,8 @@ data "aws_iam_policy_document" "deployment_permissions" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "deployment-role-to-deployment-policy" {
+resource "aws_iam_role_policy_attachment" "SQUAD_my_software_deployment-role-to-deployment-policy" {
   count = length(local.suffixes)
-  role = aws_iam_role.deployment_role[count.index].name
-  policy_arn = aws_iam_policy.deployment_policy[count.index].arn
+  role = aws_iam_role.SQUAD_my_software_deployment_role[count.index].name
+  policy_arn = aws_iam_policy.SQUAD_my_software_deployment_policy[count.index].arn
 }

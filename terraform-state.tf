@@ -2,13 +2,16 @@
 // On the production account, this policy is not needed because it's handled by the gitlab runner
 // However because we want to deploy this on the dev account. We need to add this extra policy
 // This is why the 'iam-role' directory exists, to create a new module which is isolated
-resource "aws_iam_policy" "terraform_state_policy" {
-  name = "${local.prefix}-terraform-state-policy-${var.environment}"
+resource "aws_iam_policy" "SQUAD_my_software_terraform_state_policy" {
+  count = length(local.suffixes)
+  name = "${local.prefixes["my_software"]}-terraform-state-policy-${local.suffixes[count.index]}"
 
-  policy = data.aws_iam_policy_document.terraform_state_permissions.json
+  policy = data.aws_iam_policy_document.SQUAD_my_software_terraform_state_permissions[count.index].json
 }
 
-data "aws_iam_policy_document" "terraform_state_permissions" {
+data "aws_iam_policy_document" "SQUAD_my_software_terraform_state_permissions" {
+  count = length(local.suffixes)
+
   // Allow to read the s3 state bucket
   statement {
     effect = "Allow"
@@ -19,7 +22,7 @@ data "aws_iam_policy_document" "terraform_state_permissions" {
   // allow access to the following state files
   statement {
     effect = "Allow"
-    resources = ["arn:aws:s3:::terraform-state/${local.prefix}.tfstate"]
+    resources = ["arn:aws:s3:::terraform-state/squad-my-software-dev.tfstate"]
     actions = [
       "s3:GetObject",
       "s3:PutObject",
@@ -37,7 +40,8 @@ data "aws_iam_policy_document" "terraform_state_permissions" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "deployment-role-to-terraform-state-policy" {
-  role = module.iam-role.deployment_role.0.name
-  policy_arn = aws_iam_policy.terraform_state_policy.arn
+resource "aws_iam_role_policy_attachment" "SQUAD_my_software_deployment-role-to-terraform-state-policy" {
+  count = length(local.suffixes)
+  role = aws_iam_role.SQUAD_my_software_deployment_role[count.index].name
+  policy_arn = aws_iam_policy.SQUAD_my_software_terraform_state_policy[count.index].arn
 }

@@ -1,3 +1,3 @@
 output "role" {
-  value = module.iam-role.deployment_role.0.arn
+  value = aws_iam_role.SQUAD_my_software_deployment_role.*.arn
 }
