@@ -9,21 +9,29 @@ resource "aws_iam_role" "SQUAD_my_software_deployment_role" {
 data "aws_iam_policy_document" "SQUAD_my_software_deployment_role_policy" {
   statement {
 	effect = "Allow"
-	actions = ["sts:AssumeRole"]
+	actions = [
+	  "sts:AssumeRole"
+	]
 
 	principals {
 	  type = "Service"
-	  identifiers = ["iam.amazonaws.com"]
+	  identifiers = [
+		"iam.amazonaws.com"
+	  ]
 	}
   }
 
   statement {
 	effect = "Allow"
-	actions = ["sts:AssumeRole"]
+	actions = [
+	  "sts:AssumeRole"
+	]
 
 	principals {
 	  type = "AWS"
-	  identifiers = [local.aws_account_id]
+	  identifiers = [
+		local.aws_account_id
+	  ]
 	}
   }
 }

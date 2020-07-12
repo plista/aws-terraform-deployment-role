@@ -19,10 +19,11 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:iam::${local.account_id}:policy/${local.prefixes["my_software"]}-dynamodb-policy-${local.suffixes[count.index]}",
-	  "arn:aws:iam::${local.account_id}:policy/${local.prefixes["my_software"]}-lambda-policy-${local.suffixes[count.index]}",
-	  "arn:aws:iam::${local.account_id}:policy/${local.prefixes["my_software"]}-cloudwatch-policy-${local.suffixes[count.index]}",
-	  "arn:aws:iam::${local.account_id}:role/${local.prefixes["my_software"]}-lambda-role-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.aws_account_id}:role/${local.prefixes["my_software"]}-lambda-role-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["my_software"]}-lambda-policy-${local.suffixes[count.index]}",
+
+	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["my_software"]}-dynamodb-policy-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["my_software"]}-cloudwatch-policy-${local.suffixes[count.index]}",
 	]
 	actions = [
 	  "iam:CreateRole",
@@ -35,8 +36,10 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 	  "iam:CreatePolicy",
 	  "iam:DeletePolicy",
 
+	  "iam:CreatePolicyVersion",
 	  "iam:GetPolicyVersion",
 	  "iam:ListPolicyVersions",
+	  "iam:DeletePolicyVersion",
 
 	  "iam:AttachRolePolicy",
 	  "iam:DetachRolePolicy",
@@ -78,6 +81,8 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 	  "arn:aws:apigateway:${var.aws_region}::/tags/*",
 	]
 	actions = [
+	  "apigateway:UpdateAuthorizer",
+	  "apigateway:CreateDeployment",
 	  "apigateway:GetRestApi",
 	  "apigateway:GetRestApis",
 	  "apigateway:GetResources",
@@ -86,7 +91,7 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 	  "apigateway:DELETE",
 	  "apigateway:POST",
 	  "apigateway:PUT",
-	  "apigateway:CreateDeployment",
+	  "apigateway:PATCH",
 
 	  // These are all the permissions I found, if you need an extra one, pluck it out from here and use it
 	  //      "apigateway:CreateModel",
@@ -125,7 +130,9 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   // Equally, when adding tags to a certificate during creation, it has no ARN, so "*" is used here also
   statement {
 	effect = "Allow"
-	resources = ["*"]
+	resources = [
+	  "*"
+	]
 	actions = [
 	  "acm:RequestCertificate",
 	  "acm:AddTagsToCertificate",
@@ -135,7 +142,9 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   // Manage existing certificates
   statement {
 	effect = "Allow"
-	resources = ["arn:aws:acm:*:${local.account_id}:certificate/*"]
+	resources = [
+	  "arn:aws:acm:*:${local.aws_account_id}:certificate/*"
+	]
 	actions = [
 	  "acm:DescribeCertificate",
 	  "acm:ListTagsForCertificate",
@@ -151,21 +160,31 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   // List what route53 domains exist
   statement {
 	effect = "Allow"
-	resources = ["*"]
-	actions = ["route53:ListHostedZones"]
+	resources = [
+	  "*"
+	]
+	actions = [
+	  "route53:ListHostedZones"
+	]
   }
 
   // Allow to view the status of changes to records
   statement {
 	effect = "Allow"
-	resources = ["arn:aws:route53:::change/*"]
-	actions = ["route53:GetChange"]
+	resources = [
+	  "arn:aws:route53:::change/*"
+	]
+	actions = [
+	  "route53:GetChange"
+	]
   }
 
   // List zones, tags for records sets and resources, etc
   statement {
 	effect = "Allow"
-	resources = ["arn:aws:route53:::hostedzone/*"]
+	resources = [
+	  "arn:aws:route53:::hostedzone/*"
+	]
 	actions = [
 	  "route53:ListHostedZones",
 	  "route53:GetHostedZone",
@@ -182,23 +201,33 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:lambda:*:${local.account_id}:function:${local.prefixes["my_software"]}*",
-	  "arn:aws:lambda:*:${local.account_id}:layer:${local.prefixes["my_software"]}*",
+	  "arn:aws:lambda:${var.aws_region}:${local.aws_account_id}:function:${local.prefixes["my_software"]}-function-name-${local.suffixes[count.index]}*",
 	]
 	actions = [
 	  "lambda:CreateFunction",
+	  "lambda:DeleteFunction",
 	  "lambda:UpdateFunctionCode",
 	  "lambda:UpdateFunctionConfiguration",
 	  "lambda:GetFunction",
-	  "lambda:DeleteFunction",
+	  "lambda:ListVersionsByFunction",
+	]
+  }
+
+  statement {
+	effect = "Allow"
+	resources = [
+	  "arn:aws:lambda:${var.aws_region}:${local.aws_account_id}:layer:${local.prefixes["my_software"]}-layer-name-${local.suffixes[count.index]}*",
+	]
+	actions = [
 	  "lambda:CreateLayer",
+	  "lambda:DeleteLayer",
 	  "lambda:CreateLayerVersion",
 	  "lambda:PublishLayerVersion",
 	  "lambda:GetLayerVersion",
 	  "lambda:DeleteLayerVersion",
-	  "lambda:ListVersionsByFunction",
 	]
   }
+
 
   ////////////////////////////////////////////////////////////
   //	CREATE LOG GROUPS, STREAMS, RETENTION POLICIES
@@ -206,13 +235,17 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 
   statement {
 	effect = "Allow"
-	resources = ["arn:aws:logs:${var.aws_region}:${local.account_id}:log-group::log-stream:"]
-	actions = ["logs:DescribeLogGroups"]
+	resources = [
+	  "arn:aws:logs:${var.aws_region}:${local.aws_account_id}:log-group::log-stream:"
+	]
+	actions = [
+	  "logs:DescribeLogGroups"
+	]
   }
 
   statement {
 	effect = "Allow"
-	resources = ["arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/aws/lambda/${local.prefixes["my_software"]}*:log-stream:"]
+	resources = ["arn:aws:logs:${var.aws_region}:${local.aws_account_id}:log-group:/aws/lambda/${local.prefixes["my_software"]}-*-${local.suffixes[count.index]}:log-stream:",
 	actions = [
 	  "logs:CreateLogGroup",
 	  "logs:ListTagsLogGroup",
@@ -233,7 +266,9 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/${var.squad}/api_server/${var.environment}/api_email",
 	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/${var.squad}/api_server/${var.environment}/api_password",
 	]
-	actions = ["ssm:GetParameter"]
+	actions = [
+	  "ssm:GetParameter"
+	]
   }
 
   ////////////////////////////////////////////////////////////
@@ -242,11 +277,12 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:cognito-idp:${var.aws_region}:${var.aws_account_id}:userpool/${var.aws_region}*"
+	  "arn:aws:cognito-idp:${var.aws_region}:${local.aws_account_id}:userpool/${var.aws_region}*"
 	]
 	actions = [
-	  "cognito-idp:DescribeUserPool",
-	  "cognito-idp:GetUserPoolMfaConfig",
+	  "cognito-idp:DescribeUserPoolClient",
+	  "cognito-idp:CreateUserPoolClient",
+	  "cognito-idp:DeleteUserPoolClient",
 	]
   }
 
@@ -264,7 +300,7 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 	effect = "Allow"
 	resources = [
 	  // UPDATE: Set the appropriate dynamodb table you wish to manage
-	  "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/${local.prefixes["my_software"]}-my-table-name-${local.suffixes[count.index]}",
+	  "arn:aws:dynamodb:${var.aws_region}:${local.aws_account_id}:table/${local.prefixes["my_software"]}-my-table-name-${local.suffixes[count.index]}",
 	]
 	actions = [
 	  "dynamodb:DescribeTable",
