@@ -5,7 +5,7 @@ variable "aws_region" {
 }
 
 locals {
-  aws_account_id  = data.aws_caller_identity.current.account_id
+  aws_account_id = data.aws_caller_identity.current.account_id
 
   // UPDATE: Set to the correct name for your squad
   // NOTE: We need this parameter separately sometimes to refer to resources by SQUAD name

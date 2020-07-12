@@ -2,7 +2,7 @@ resource "aws_iam_policy" "SQUAD_my_software_deployment_policy" {
   count = length(local.suffixes)
   name = "${local.prefixes["my_software"]}-deployment-policy-${local.suffixes[count.index]}"
 
-  policy = data.aws_iam_policy_document.SQUAD_my_software_deployment_permissions[count.index].json
+  policy = data.aws_iam_policy_document.SQUAD_my_software_deployment_permissions[ count.index ].json
 }
 
 data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
@@ -54,8 +54,12 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   ////////////////////////////////////////////////////////////
   statement {
 	effect = "Allow"
-	resources = [aws_iam_role.SQUAD_my_software_deployment_role[count.index].arn]
-	actions = ["ec2:DescribeAccountAttributes"]
+	resources = [
+	  aws_iam_role.SQUAD_my_software_deployment_role[ count.index ].arn
+	]
+	actions = [
+	  "ec2:DescribeAccountAttributes"
+	]
   }
 
   ////////////////////////////////////////////////////////////
@@ -245,7 +249,9 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 
   statement {
 	effect = "Allow"
-	resources = ["arn:aws:logs:${var.aws_region}:${local.aws_account_id}:log-group:/aws/lambda/${local.prefixes["my_software"]}-*-${local.suffixes[count.index]}:log-stream:",
+	resources = [
+	  "arn:aws:logs:${var.aws_region}:${local.aws_account_id}:log-group:/aws/lambda/${local.prefixes["my_software"]}-*-${local.suffixes[count.index]}:log-stream:",
+	]
 	actions = [
 	  "logs:CreateLogGroup",
 	  "logs:ListTagsLogGroup",
@@ -288,8 +294,12 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 
   statement {
 	effect = "Allow"
-	resources = ["*"]
-	actions = ["cognito-idp:CreateUserPool"]
+	resources = [
+	  "*"
+	]
+	actions = [
+	  "cognito-idp:CreateUserPool"
+	]
   }
 
   ////////////////////////////////////////////////////////////
@@ -313,6 +323,6 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 
 resource "aws_iam_role_policy_attachment" "SQUAD_my_software_deployment-role-to-deployment-policy" {
   count = length(local.suffixes)
-  role = aws_iam_role.SQUAD_my_software_deployment_role[count.index].name
-  policy_arn = aws_iam_policy.SQUAD_my_software_deployment_policy[count.index].arn
+  role = aws_iam_role.SQUAD_my_software_deployment_role[ count.index ].name
+  policy_arn = aws_iam_policy.SQUAD_my_software_deployment_policy[ count.index ].arn
 }

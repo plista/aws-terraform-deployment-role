@@ -6,7 +6,7 @@ resource "aws_iam_policy" "SQUAD_my_software_terraform_state_policy" {
   count = length(local.suffixes)
   name = "${local.prefixes["my_software"]}-terraform-state-policy-${local.suffixes[count.index]}"
 
-  policy = data.aws_iam_policy_document.SQUAD_my_software_terraform_state_permissions[count.index].json
+  policy = data.aws_iam_policy_document.SQUAD_my_software_terraform_state_permissions[ count.index ].json
 }
 
 data "aws_iam_policy_document" "SQUAD_my_software_terraform_state_permissions" {
@@ -14,34 +14,42 @@ data "aws_iam_policy_document" "SQUAD_my_software_terraform_state_permissions" {
 
   // Allow to read the s3 state bucket
   statement {
-    effect = "Allow"
-    resources = ["arn:aws:s3:::terraform-state"]
-    actions = ["s3:ListBucket"]
+	effect = "Allow"
+	resources = [
+	  "arn:aws:s3:::terraform-state"
+	]
+	actions = [
+	  "s3:ListBucket"
+	]
   }
 
   // allow access to the following state files
   statement {
-    effect = "Allow"
-    resources = ["arn:aws:s3:::terraform-state/squad-my-software-dev.tfstate"]
-    actions = [
-      "s3:GetObject",
-      "s3:PutObject",
-    ]
+	effect = "Allow"
+	resources = [
+	  "arn:aws:s3:::terraform-state/squad-my-software-dev.tfstate"
+	]
+	actions = [
+	  "s3:GetObject",
+	  "s3:PutObject",
+	]
   }
 
   // allow access to the dynamodb lock table to prevent clashes whilst deploying with other developers
   statement {
-    effect = "Allow"
-    resources = ["arn:aws:dynamodb:${var.aws_region}:${local.aws_account_id}:table/terraform-lock"]
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-    ]
+	effect = "Allow"
+	resources = [
+	  "arn:aws:dynamodb:${var.aws_region}:${local.aws_account_id}:table/terraform-lock"
+	]
+	actions = [
+	  "dynamodb:GetItem",
+	  "dynamodb:PutItem",
+	]
   }
 }
 
 resource "aws_iam_role_policy_attachment" "SQUAD_my_software_deployment-role-to-terraform-state-policy" {
   count = length(local.suffixes)
-  role = aws_iam_role.SQUAD_my_software_deployment_role[count.index].name
-  policy_arn = aws_iam_policy.SQUAD_my_software_terraform_state_policy[count.index].arn
+  role = aws_iam_role.SQUAD_my_software_deployment_role[ count.index ].name
+  policy_arn = aws_iam_policy.SQUAD_my_software_terraform_state_policy[ count.index ].arn
 }
