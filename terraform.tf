@@ -20,6 +20,7 @@ terraform {
 	dynamodb_table = "terraform-lock"
 	region = "eu-west-1"
 	// UPDATE: Set the name of the state file, try to make it similar to your local.prefix value
-	key = "SQUAD-my-project-deployment-role.tfstate"
+	// NOTE: must be lowercase characters
+	key = "squad-my-project-deployment-role.tfstate"
   }
 }
