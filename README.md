@@ -30,12 +30,12 @@ process is outside the scope of this repository.
 It's very important to not forget to edit the `terraform.tf` file and set the correct information _BEFORE_ running
 any terraform command. This is because terraform will create resources based on that configuration. 
 
-By default in this repository, that information it set to the same `SQUAD-my-project-deployment-role.tfstate` value and
+By default in this repository, that information it set to the same `SQUAD-my-software-deployment-role.tfstate` value and
 there will be problems if these values are not changed before running terraform for the first time.
 
 - Update the `bucket` value to match the desired s3 bucket to store state into
 - Update the `dynamodb_table` value to match the desired dynamodb table to store terraform lock information in.
-- Update the `key` value to match the `SQUAD` name and replace `my-project` with the `service name`
+- Update the `key` value to match the `SQUAD` name and replace `my-software` with the `service name`
 
 # Customising
 
