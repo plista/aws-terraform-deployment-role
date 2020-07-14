@@ -267,10 +267,10 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/SELFSV/api-gateway/${local.suffixes[count.index]}/domain",
-	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/SELFSV/api-server/${local.suffixes[count.index]}/api_server_url",
-	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/SELFSV/api-server/${local.suffixes[count.index]}/api_email",
-	  "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/SELFSV/api-server/${local.suffixes[count.index]}/api_password",
+	  "arn:aws:ssm:${var.aws_region}:${local.aws_account_id}:parameter/SELFSV/api-gateway/${local.suffixes[count.index]}/domain",
+	  "arn:aws:ssm:${var.aws_region}:${local.aws_account_id}:parameter/SELFSV/api-server/${local.suffixes[count.index]}/api_server_url",
+	  "arn:aws:ssm:${var.aws_region}:${local.aws_account_id}:parameter/SELFSV/api-server/${local.suffixes[count.index]}/api_email",
+	  "arn:aws:ssm:${var.aws_region}:${local.aws_account_id}:parameter/SELFSV/api-server/${local.suffixes[count.index]}/api_password",
 	]
 	actions = [
 	  "ssm:GetParameter"
