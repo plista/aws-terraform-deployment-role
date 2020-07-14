@@ -1,6 +1,6 @@
 resource "aws_iam_policy" "SQUAD_my_software_deployment_policy" {
   count = length(local.suffixes)
-  name = "${local.prefixes["my_software"]}-deployment-policy-${local.suffixes[count.index]}"
+  name = "${local.prefixes["squad_my_software"]}-deployment-policy-${local.suffixes[count.index]}"
 
   policy = data.aws_iam_policy_document.SQUAD_my_software_deployment_permissions[ count.index ].json
 }
@@ -19,11 +19,11 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:iam::${local.aws_account_id}:role/${local.prefixes["my_software"]}-lambda-role-${local.suffixes[count.index]}",
-	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["my_software"]}-lambda-policy-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.aws_account_id}:role/${local.prefixes["squad_my_software"]}-lambda-role-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["squad_my_software"]}-lambda-policy-${local.suffixes[count.index]}",
 
-	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["my_software"]}-dynamodb-policy-${local.suffixes[count.index]}",
-	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["my_software"]}-cloudwatch-policy-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["squad_my_software"]}-dynamodb-policy-${local.suffixes[count.index]}",
+	  "arn:aws:iam::${local.aws_account_id}:policy/${local.prefixes["squad_my_software"]}-cloudwatch-policy-${local.suffixes[count.index]}",
 	]
 	actions = [
 	  "iam:CreateRole",
@@ -205,7 +205,7 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:lambda:${var.aws_region}:${local.aws_account_id}:function:${local.prefixes["my_software"]}-function-name-${local.suffixes[count.index]}*",
+	  "arn:aws:lambda:${var.aws_region}:${local.aws_account_id}:function:${local.prefixes["squad_my_software"]}-function-name-${local.suffixes[count.index]}*",
 	]
 	actions = [
 	  "lambda:CreateFunction",
@@ -220,7 +220,7 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:lambda:${var.aws_region}:${local.aws_account_id}:layer:${local.prefixes["my_software"]}-layer-name-${local.suffixes[count.index]}*",
+	  "arn:aws:lambda:${var.aws_region}:${local.aws_account_id}:layer:${local.prefixes["squad_my_software"]}-layer-name-${local.suffixes[count.index]}*",
 	]
 	actions = [
 	  "lambda:CreateLayer",
@@ -250,7 +250,7 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:logs:${var.aws_region}:${local.aws_account_id}:log-group:/aws/lambda/${local.prefixes["my_software"]}-*-${local.suffixes[count.index]}:log-stream:",
+	  "arn:aws:logs:${var.aws_region}:${local.aws_account_id}:log-group:/aws/lambda/${local.prefixes["squad_my_software"]}-*-${local.suffixes[count.index]}:log-stream:",
 	]
 	actions = [
 	  "logs:CreateLogGroup",
@@ -310,7 +310,7 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
 	effect = "Allow"
 	resources = [
 	  // UPDATE: Set the appropriate dynamodb table you wish to manage
-	  "arn:aws:dynamodb:${var.aws_region}:${local.aws_account_id}:table/${local.prefixes["my_software"]}-my-table-name-${local.suffixes[count.index]}",
+	  "arn:aws:dynamodb:${var.aws_region}:${local.aws_account_id}:table/${local.prefixes["squad_my_software"]}-my-table-name-${local.suffixes[count.index]}",
 	]
 	actions = [
 	  "dynamodb:DescribeTable",

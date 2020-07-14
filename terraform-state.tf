@@ -4,7 +4,7 @@
 // This is why the 'iam-role' directory exists, to create a new module which is isolated
 resource "aws_iam_policy" "SQUAD_my_software_terraform_state_policy" {
   count = length(local.suffixes)
-  name = "${local.prefixes["my_software"]}-terraform-state-policy-${local.suffixes[count.index]}"
+  name = "${local.prefixes["squad_my_software"]}-terraform-state-policy-${local.suffixes[count.index]}"
 
   policy = data.aws_iam_policy_document.SQUAD_my_software_terraform_state_permissions[ count.index ].json
 }
