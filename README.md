@@ -56,10 +56,6 @@ global infrastructure project and find that the same resource names are being us
 So the way around this is to name each resource with a prefix relating to the project. That way the 
 problem is avoided completely.
 
-### Local value `local.squad`
-
-Try to make this value the same as the team the service is being built for
-
 ### Local value `local.suffixes`
 
 On the production account, There are multiple suffixes in the value `local.suffixes`. So to minimise differences between deployments
