@@ -1,7 +1,7 @@
 // NOTE: We have a separate policy for terraform s3 state file and dynamodb lock table because
 // On the production account, this policy is not needed because it's handled by the gitlab runner
 // However because we want to deploy this on the dev account. We need to add this extra policy
-// This is why the 'iam-role' directory exists, to create a new module which is isolated
+
 resource "aws_iam_policy" "SQUAD_my_software_terraform_state_policy" {
   count = length(local.suffixes)
   name = "${local.prefixes["squad_my_software"]}-terraform-state-policy-${local.suffixes[count.index]}"
