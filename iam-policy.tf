@@ -63,6 +63,109 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   }
 
   ////////////////////////////////////////////////////////////
+  //	MANAGE ECS RESOURCES
+  ////////////////////////////////////////////////////////////
+  statement {
+	effect = "Allow"
+	resources = [
+	  "*"
+	]
+	actions = [
+	  "ecs:CreateCluster",
+	  "ecs:DescribeTaskDefinition",
+	  "ecs:DeregisterTaskDefinition",
+	  "ecs:RegisterTaskDefinition",
+	  "ec2:CreateSecurityGroup",
+	  "ec2:DescribeSecurityGroups",
+	  "ec2:CreateTags",
+	  "ec2:DescribeNetworkInterfaces",
+	  "elasticloadbalancing:DescribeLoadBalancers",
+	  "elasticloadbalancing:DescribeTags",
+	  "elasticloadbalancing:DescribeLoadBalancerAttributes",
+	  "elasticloadbalancing:DescribeTargetGroups",
+	  "elasticloadbalancing:DescribeTargetGroupAttributes",
+	  "elasticloadbalancing:DescribeListeners",
+	]
+  }
+
+  statement {
+	effect = "Allow"
+	resources = [
+	  "arn:aws:ec2:${var.aws_region}:${local.aws_account_id}:security-group/*"
+	]
+	actions = [
+	  "ec2:DescribeSecurityGroups",
+	  "ec2:DeleteSecurityGroup",
+	  "ec2:RevokeSecurityGroupEgress",
+	  "ec2:RevokeSecurityGroupIngress",
+	  "ec2:AuthorizeSecurityGroupIngress",
+	  "ec2:AuthorizeSecurityGroupEgress",
+	]
+  }
+
+  statement {
+	effect = "Allow"
+	resources = [
+	  "arn:aws:elasticloadbalancing:${var.aws_region}:${local.aws_account_id}:loadbalancer/net/${local.prefixes["squad_my_software"]}-${local.suffixes[count.index]}/*"
+	]
+	actions = [
+	  "elasticloadbalancing:CreateLoadBalancer",
+	  "elasticloadbalancing:DeleteLoadBalancer",
+	  "elasticloadbalancing:ModifyLoadBalancerAttributes",
+	  "elasticloadbalancing:CreateListener",
+	  "elasticloadbalancing:AddTags",
+	]
+  }
+
+  statement {
+	effect = "Allow"
+	resources = [
+	  "arn:aws:elasticloadbalancing:${var.aws_region}:${local.aws_account_id}:listener/net/${local.prefixes["squad_my_software"]}-${local.suffixes[count.index]}/*"
+	]
+	actions = [
+	  "elasticloadbalancing:DeleteListener",
+	]
+  }
+
+  statement {
+	effect = "Allow"
+	resources = [
+	  "arn:aws:elasticloadbalancing:${var.aws_region}:${local.aws_account_id}:targetgroup/${local.prefixes["squad_my_software"]}-${local.suffixes[count.index]}/*"
+	]
+	actions = [
+	  "elasticloadbalancing:CreateTargetGroup",
+	  "elasticloadbalancing:DeleteTargetGroup",
+	  "elasticloadbalancing:ModifyTargetGroup",
+	  "elasticloadbalancing:ModifyTargetGroupAttributes",
+	  "elasticloadbalancing:AddTags"
+	]
+  }
+
+  statement {
+	effect = "Allow"
+	resources = [
+	  "arn:aws:ecs:${var.aws_region}:${local.aws_account_id}:cluster/${local.prefixes["squad_my_software"]}-${local.suffixes[count.index]}"
+	]
+	actions = [
+	  "ecs:DescribeClusters",
+	  "ecs:DeleteCluster",
+	]
+  }
+
+  statement {
+	effect = "Allow"
+	resources = [
+	  "arn:aws:ecs:${var.aws_region}:${local.aws_account_id}:service/${local.prefixes["squad_my_software"]}-${local.suffixes[count.index]}/container_name"
+	]
+	actions = [
+	  "ecs:DescribeServices",
+	  "ecs:CreateService",
+	  "ecs:UpdateService",
+	  "ecs:DeleteService",
+	]
+  }
+
+  ////////////////////////////////////////////////////////////
   //	MANAGE API GATEWAY RESOURCES
   ////////////////////////////////////////////////////////////
 
