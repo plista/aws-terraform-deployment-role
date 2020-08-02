@@ -155,7 +155,7 @@ data "aws_iam_policy_document" "SQUAD_my_software_deployment_permissions" {
   statement {
 	effect = "Allow"
 	resources = [
-	  "arn:aws:ecs:${var.aws_region}:${local.aws_account_id}:service/${local.prefixes["squad_my_software"]}-${local.suffixes[count.index]}/container_name"
+	  "arn:aws:ecs:${var.aws_region}:${local.aws_account_id}:service/${local.prefixes["squad_my_software"]}-${local.suffixes[count.index]}/${local.squad_my_software.service_name}}"
 	]
 	actions = [
 	  "ecs:DescribeServices",

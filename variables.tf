@@ -18,4 +18,10 @@ locals {
   suffixes = {
 	"0" = "dev"
   }
+
+  // UPDATE: this is the ecs service name, this can be deleted if the project isn't needing to run an ecs service
+  squad_my_software = {
+	"service_name" = "my-software"
+  }
 }
+
